@@ -1,0 +1,114 @@
+#"maxlimit" is the hydration limit. When the player's hydration is equal to this one, then the player is completely hydrated.
+#"NumberAddAfterYouDrinkWater" This is the number that is awarded when the player drinks water. This will be added to achieve total hydration or otherwise say "maxlimit"
+#"MessageThirstyPlayer" this is the message that will be sent when the player has reached their minimum hydration level! this one must drink immediately or it will take damage!
+#"MessageWhenThePlayerComesDrinkingWater" this is the message that is sent when a player drinks water .. quite simply.
+
+#Do not touch to "options"
+#Don't touch phrases like "maxlimit", "MessageThirstyPlayer"! just change the value following the colon!
+
+options:
+
+maxlimit: 100
+NumberAddAfterYouDrinkWater: 20
+
+TimeBeforeThePlayerGetsAReductionInHydration: 1
+Time: minutes
+#change "minutes" by "hours" or "seconds"
+
+MessageThirstyPlayer: &7You| &cOuch! I am thirsty ! Give me a drink!
+MessageWhenThePlayerComesDrinkingWater: &bYou just drank!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+on join:
+    set {water.%player%} to {@maxlimit}
+    set {unlimitedwater.%player%} to false
+
+
+command /water [<text>] [<player>] [<number>]:
+    trigger:
+        if arg 1 is "set":
+            set {water.%arg 2%} to arg 3
+        if arg 1 and arg 2 and arg 3 is not set:
+            if {unlimitedwater.%player%} is false:
+                send "&b====="
+                send ""
+                send "&7Actuellement, tu est hydrater a &6%{eau.%player%}%&8/&e100"
+                send ""
+                send "&b====="
+            if {unlimitedwater.%player%} is true:
+                send "&b====="
+                send ""
+                send "&7Actuellement, tu est hydrater a &6UNLIMITED&8/&e100"
+                send "&7UnlimitedWater est actuellement sur &atrue !"
+                send ""
+                send "&b====="
+        if player have a permission "HAW.op":
+            if arg 1 is "op":
+                set {unlimitedwater.%arg-2%} to true
+                set {water.%arg-2%} to {@maxlimit}
+                send "&7&lUnlimitedWater &8= &b&lYou are no longer affected by dehydration!" to arg-2
+        if player have a permission "HAW.deop":
+            if arg 1 is "deop":
+                set {unlimitedwater.%arg-2%} to false
+                set {water.%arg-2%} to {@maxlimit}
+                send "&7&lUnlimitedWater &8= &c&lYou are now impacted by dehydration!" to arg-2
+
+on consume of water bottle:
+    if {unlimitedwater.%player%} is false:
+        if {water.%player%} is greater than or equal to {@maxlimit}:
+            set {water.%player%} to {@maxlimit}
+            send "&cYou are already Hydrating! &f(&6%{water.%player%}%&8/&e{@maxlimit}&f)"
+            stop 
+        else:
+            if {water.%player%} is smaller than {@maxlimit}:
+                add {@NumberAddAfterYouDrinkWater} to {eau.%player%}
+                send "{@MessageWhenThePlayerComesDrinkingWater}"
+                set action bar of player to "&bHydration: &6%{water.%player%}%&8/&e{@maxlimit}"
+
+
+every {@TimeBeforeThePlayerGetsAReductionInHydration} {@Time}:
+    loop all players:
+        if loop-player is in world "world2":
+            if {unlimitedwater.%loop-player%} is false:
+                if {water.%loop-player%} is smaller than or equal to 0:
+                    send "{@MessageThirstyPlayer}" to loop-player
+                    set {water.%loop-player%} to 0
+                    make loop-player damage loop-player by 1
+                else:
+                    remove 20 from {water.%loop-player%}
+                    set action bar of loop-players to "&bHydration: &6%{water.%loop-player%}%&8/&e{@maxlimit}"
