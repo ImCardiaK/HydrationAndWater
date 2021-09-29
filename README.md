@@ -1,7 +1,14 @@
 # HydrationAndWater
                     Adds the need for players to drink. If they don't drink, they will take damage!!
-
-
+                    
+ Need of:
+ - TuSKe
+ - SkRayFall
+ - SkQuery
+ - Sk-NbeeT
+ - Skellett-Legacy
+ - SkBee
+----------------
                     Useful commands(admin):
                         - /water set <player> <number>
                         exemple: /water set ImCardiaK 100
